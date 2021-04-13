@@ -5,6 +5,9 @@ using System.Collections.Generic;
 namespace SafeTest {
     static class Reflection
     {
+
+        private static Logger logger = new Logger("Reflection");
+
         public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attribute)
         {
             // Loop through every type in the assembly

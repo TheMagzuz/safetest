@@ -3,8 +3,11 @@ using SafeTest;
 namespace exampletests
 {
     [TestClass]
-    static class Tests
+    class Tests
     {
-
+        public static void Test()
+        {
+            
+        }
     }
 }

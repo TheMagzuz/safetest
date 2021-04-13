@@ -7,7 +7,7 @@ namespace exampletest
     {
         static void Main(string[] args)
         {
-            SafeTest.RunTests();
+            SafeTest.SafeTest.RunTests();
         }
     }
 }

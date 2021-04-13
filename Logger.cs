@@ -14,8 +14,8 @@ namespace SafeTest
         private void Log(string message, LogLevel level)
         {
             Console.ForegroundColor = level.GetTextColor();
-            Console.WriteLine(message);
-            Console.ForegroundColor = (ConsoleColor)(-1);
+            Console.WriteLine($"[{name}/{level}] " + message);
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         public void Debug(string message)
@@ -58,7 +58,7 @@ namespace SafeTest
                 case LogLevel.DEBUG:
                 case LogLevel.INFO: // FALLTHROUGH
                 default:
-                    return (ConsoleColor)(-1); // -1 represents the default console color
+                    return ConsoleColor.Gray;
             }
         }
     }

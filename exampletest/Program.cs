@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using SafeTest;
 
 namespace exampletest
@@ -7,7 +8,7 @@ namespace exampletest
     {
         static void Main(string[] args)
         {
-            SafeTest.SafeTest.RunTests();
+            SafeTest.SafeTest.RunTests(typeof(exampleproject.Program).Assembly);
         }
     }
 }

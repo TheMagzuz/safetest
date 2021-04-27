@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -7,6 +8,8 @@ namespace SafeTest {
     {
 
         private static Logger logger = new Logger("Reflection");
+
+        private static string[] builtinMethods = { "ToString", "GetHashCode", "GetType", "Equals" };
 
         public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attribute)
         {
@@ -21,5 +24,11 @@ namespace SafeTest {
                 }
             }
         }
+
+        public static bool IsBuiltin(MethodInfo m)
+        {
+            return builtinMethods.Contains(m.Name);
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SafeTest
 {
@@ -20,18 +21,13 @@ namespace SafeTest
         private static void FindTests()
         {
             logger.Info("Finding tests...");
-            Console.Write("[SafeTest/INFO] Tests found:  ");
 
-            int left = Console.CursorLeft;
-            int top = Console.CursorTop;
-            int writeLine = Console.CursorTop + 1;
-            Console.Write("0");
+            ConsoleCounter testsFoundCounter = new ConsoleCounter("[SafeTest/INFO] Tests found: {0}");
+            testsFoundCounter.Draw();
 
             // This will get all classes in the assembly of the function calling this function, which have the TestClassAttribute
             foreach (Type t in Reflection.GetTypesWithAttribute(Assembly.GetEntryAssembly(), typeof(TestClassAttribute)))
             {
-                Console.SetCursorPosition(0, writeLine);
-                writeLine++;
                 Console.WriteLine("Found test class: " + t.Name);
 
                 // Loop through all the methods in the class
@@ -47,23 +43,15 @@ namespace SafeTest
                     // If the method is non-static, show a warning and ignore the method
                     if (!m.IsStatic)
                     {
-                        Console.SetCursorPosition(0, writeLine);
                         logger.Warning($"Method {fullMethodName} is non-static. It will not be called");
-                        writeLine++;
-                        Console.SetCursorPosition(left, top);
                     }
                     else
                     {
-                        Console.SetCursorPosition(left - testMethods.Count.ToString().Length, top);
-
                         CoversAttribute[] attributes = (CoversAttribute[]) m.GetCustomAttributes(typeof(CoversAttribute), false);
 
                         if (attributes.Length > 1)
                         {
-                            Console.SetCursorPosition(0, writeLine);
                             logger.Warning($"The test {fullMethodName} covers more than one method. This is generally considered bad practice");
-                            writeLine++;
-                            Console.SetCursorPosition(left, top);
                         }
 
                         List<MethodInfo> coveredMethods = new List<MethodInfo>();
@@ -74,25 +62,20 @@ namespace SafeTest
                         }
 
                         testMethods.Add(new Test(m, coveredMethods));
-                        Console.Write(testMethods.Count.ToString());
+                        testsFoundCounter.Increment();
                     }
                 }
             }
-            Console.SetCursorPosition(0, writeLine);
             logger.Info("Done finding tests");
         }
 
         private static void ExecuteTests()
         {
-            logger.Info("Running tests");
-            Console.Write("[SafeTest/INFO] Tests done: ");
-            int writeLeft = Console.CursorLeft;
-            int writeTop = Console.CursorTop;
-            int writeLine = writeTop + 1;
+            logger.Info("Running tests"); 
+            ConsoleProgressCounter progressCounter = new ConsoleProgressCounter("[SafeTest/INFO] Tests done: {0}/{1} {2}", testMethods.Count, 35);
             int testsDone = 0;
             List<FailedTest> failedTests = new List<FailedTest>();
-            Console.Write(testsDone + "/" + testMethods.Count + $" ({failedTests.Count} failed)");
-
+            progressCounter.Draw();
 
             foreach (Test test in testMethods)
             {
@@ -108,12 +91,10 @@ namespace SafeTest
                 finally
                 {
                     testsDone++;
-                    Console.SetCursorPosition(writeLeft, writeTop);
-                    Console.Write(testsDone + "/" + testMethods.Count + $" ({failedTests.Count} failed)");
+                    progressCounter.Increment();
                 }
 
             }
-            Console.SetCursorPosition(0, writeLine);
             logger.Info("Done running tests");
             if (failedTests.Count == 0)
             {

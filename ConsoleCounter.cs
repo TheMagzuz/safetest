@@ -29,8 +29,8 @@ namespace SafeTest
             Console.CursorTop = top;
             Console.CursorLeft = 0;
             
-            // Write the text
-            Console.WriteLine(FormatDisplay());
+            // Write the text, making sure that the line is empty
+            Console.WriteLine(FormatDisplay().PadRight(Console.BufferWidth-1));
 
             // Restore the position of the cursor
             Console.CursorLeft = previousLeft;

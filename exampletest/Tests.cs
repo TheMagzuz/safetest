@@ -18,5 +18,11 @@ namespace exampletests
             Assertions.Assert(false, "This should fail!");
         }
 
+        [Covers(typeof(exampleproject.Program))]
+        public static void TestAddition()
+        {
+            Assertions.Assert(exampleproject.Program.AddNumbers(1, 2) == 3, "Adding 1 and 2 equals 3");
+        }
+
     }
 }

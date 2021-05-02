@@ -57,7 +57,7 @@ namespace SafeTest
             switch (level)
             {
                 case LogLevel.WARNING:
-                    return ConsoleColor.Yellow;
+                    return ConsoleColor.DarkYellow;
                 case LogLevel.ERROR:
                     return ConsoleColor.Red;
                 case LogLevel.SUCCES:

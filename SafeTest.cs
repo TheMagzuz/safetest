@@ -58,7 +58,7 @@ namespace SafeTest
             // This will get all classes in the assembly of the function calling this function, which have the TestClassAttribute
             foreach (Type t in Reflection.GetTypesWithAttribute(Assembly.GetEntryAssembly(), typeof(TestClassAttribute)))
             {
-                Console.WriteLine("Found test class: " + t.Name);
+                logger.Info("Found test class: " + t.Name);
 
                 // Loop through all the methods in the class
                 foreach (MethodInfo m in t.GetMethods())
@@ -82,6 +82,9 @@ namespace SafeTest
                         if (attributes.Length > 1)
                         {
                             logger.Warning($"The test {fullMethodName} covers more than one type. This is generally considered bad practice");
+                        } else if (attributes.Length <= 0)
+                        {
+                            logger.Warning($"The test {fullMethodName} does not cover any types");
                         }
 
                         List<Type> coveredMethods = new List<Type>();

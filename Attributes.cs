@@ -12,11 +12,11 @@ namespace SafeTest
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class CoversAttribute : Attribute
     {
-        public readonly Action methodCovered;
+        public readonly Type typeCovered;
 
-        public CoversAttribute(Action methodCovered)
+        public CoversAttribute(Type typeCovered)
         {
-            this.methodCovered = methodCovered;
+            this.typeCovered = typeCovered;
         }
     }
 

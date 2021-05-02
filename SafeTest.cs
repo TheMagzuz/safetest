@@ -51,14 +51,14 @@ namespace SafeTest
 
                         if (attributes.Length > 1)
                         {
-                            logger.Warning($"The test {fullMethodName} covers more than one method. This is generally considered bad practice");
+                            logger.Warning($"The test {fullMethodName} covers more than one type. This is generally considered bad practice");
                         }
 
-                        List<MethodInfo> coveredMethods = new List<MethodInfo>();
+                        List<Type> coveredMethods = new List<Type>();
 
                         foreach (CoversAttribute a in attributes)
                         {
-                            coveredMethods.Add(a.methodCovered.Method);
+                            coveredMethods.Add(a.typeCovered);
                         }
 
                         testMethods.Add(new Test(m, coveredMethods));

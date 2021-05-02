@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,8 +15,37 @@ namespace SafeTest
         public static void RunTests(Assembly projectAssembly)
         {
             FindTests();
+            CheckCoverage(projectAssembly);
             ExecuteTests();
             Console.ReadKey();
+        }
+
+        private static void CheckCoverage(Assembly projectAssembly)
+        {
+            logger.Info("Checking coverage");
+            Type[] types = projectAssembly.GetTypes();
+            bool failure = false;
+
+            ConsoleProgressCounter progress = new ConsoleProgressCounter("[SafeTest/INFO]: Checking coverage for types: {0}/{1} {2}", types.Length, 20);
+            progress.Draw();
+
+            foreach (Type t in types)
+            {
+                if (!testMethods.Any(tm => tm.classesTested.Contains(t)))
+                {
+                    logger.Warning($"Type {t.FullName} is not covered by any tests");
+                    failure = true;
+                }
+                progress.Increment();
+            }
+            if (failure)
+            {
+                logger.Warning("Some coverage checks failed. Check the logs for further details");
+            }
+            else
+            {
+                logger.Succes("Coverage checks finished with no errors");
+            }
         }
 
         private static void FindTests()
@@ -47,7 +77,7 @@ namespace SafeTest
                     }
                     else
                     {
-                        CoversAttribute[] attributes = (CoversAttribute[]) m.GetCustomAttributes(typeof(CoversAttribute), false);
+                        CoversAttribute[] attributes = (CoversAttribute[])m.GetCustomAttributes(typeof(CoversAttribute), false);
 
                         if (attributes.Length > 1)
                         {
@@ -71,7 +101,7 @@ namespace SafeTest
 
         private static void ExecuteTests()
         {
-            logger.Info("Running tests"); 
+            logger.Info("Running tests");
             ConsoleProgressCounter progressCounter = new ConsoleProgressCounter("[SafeTest/INFO] Tests done: {0}/{1} {2}", testMethods.Count, 35);
             int testsDone = 0;
             List<FailedTest> failedTests = new List<FailedTest>();
@@ -108,7 +138,8 @@ namespace SafeTest
                     if (t.exception is AssertionException)
                     {
                         logger.Error($"{t.methodName} failed: {t.exception.Message}");
-                    } else
+                    }
+                    else
                     {
                         logger.Error($"{t.methodName} threw an unexpected exception: {t.exception}");
                     }

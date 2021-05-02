@@ -7,8 +7,6 @@ namespace SafeTest {
     static class Reflection
     {
 
-        private static Logger logger = new Logger("Reflection");
-
         private static string[] builtinMethods = { "ToString", "GetHashCode", "GetType", "Equals" };
 
         public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attribute)

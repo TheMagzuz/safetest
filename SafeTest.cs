@@ -20,34 +20,6 @@ namespace SafeTest
             Console.ReadKey();
         }
 
-        private static void CheckCoverage(Assembly projectAssembly)
-        {
-            logger.Info("Checking coverage");
-            Type[] types = projectAssembly.GetTypes();
-            bool failure = false;
-
-            ConsoleProgressCounter progress = new ConsoleProgressCounter("[SafeTest/INFO]: Checking coverage for types: {0}/{1} {2}", types.Length, 20);
-            progress.Draw();
-
-            foreach (Type t in types)
-            {
-                if (!testMethods.Any(tm => tm.classesTested.Contains(t)))
-                {
-                    logger.Warning($"Type {t.FullName} is not covered by any tests");
-                    failure = true;
-                }
-                progress.Increment();
-            }
-            if (failure)
-            {
-                logger.Warning("Some coverage checks failed. Check the logs for further details");
-            }
-            else
-            {
-                logger.Succes("Coverage checks finished with no errors");
-            }
-        }
-
         private static void FindTests()
         {
             logger.Info("Finding tests...");
@@ -79,13 +51,6 @@ namespace SafeTest
                     {
                         CoversAttribute[] attributes = (CoversAttribute[])m.GetCustomAttributes(typeof(CoversAttribute), false);
 
-                        if (attributes.Length > 1)
-                        {
-                            logger.Warning($"The test {fullMethodName} covers more than one type. This is generally considered bad practice");
-                        } else if (attributes.Length <= 0)
-                        {
-                            logger.Warning($"The test {fullMethodName} does not cover any types");
-                        }
 
                         List<Type> coveredMethods = new List<Type>();
 
@@ -100,6 +65,49 @@ namespace SafeTest
                 }
             }
             logger.Info("Done finding tests");
+        }
+
+        private static void CheckCoverage(Assembly projectAssembly)
+        {
+            logger.Info("Checking coverage");
+            Type[] types = projectAssembly.GetTypes();
+            bool failure = false;
+
+            ConsoleProgressCounter progress = new ConsoleProgressCounter("[SafeTest/INFO]: Checking coverage for types: {0}/{1} {2}", types.Length, 20);
+            progress.Draw();
+
+            foreach (Type t in types)
+            {
+                if (!testMethods.Any(tm => tm.classesTested.Contains(t)))
+                {
+                    logger.Warning($"Type {t.FullName} is not covered by any tests");
+                    failure = true;
+                }
+                progress.Increment();
+            }
+
+            foreach (Test test in testMethods)
+            {
+                if (test.classesTested.Count > 1)
+                {
+                    logger.Warning($"The test {test.methodName} covers more than one type. This is generally considered bad practice");
+                    failure = true;
+                }
+                else if (test.classesTested.Count <= 0)
+                {
+                    logger.Warning($"The test {test.methodName} does not cover any types");
+                    failure = true;
+                }
+            }
+
+            if (failure)
+            {
+                logger.Warning("Some coverage checks failed. Check the logs for further details");
+            }
+            else
+            {
+                logger.Succes("Coverage checks finished with no errors");
+            }
         }
 
         private static void ExecuteTests()
